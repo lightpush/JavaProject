@@ -230,6 +230,7 @@ public class TabbedTable extends JFrame implements ActionListener {
                     //총 가격을 나타내는 곳
                     last.setText("총 가격 : " + totalsum );
 
+
                 } catch (IOException e1) {
                     handleError(e1.getMessage());
                 }
