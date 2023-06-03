@@ -17,6 +17,7 @@ public class TabbedTable extends JFrame implements ActionListener {
     // 교과서 497p에 있는 JTabbedPane 사용. 인기메뉴/ 면류/ 밥류 등등..
     private BufferedReader in = null;
     private BufferedWriter out = null;
+    //소켓
     private Socket socket = null;
     private Receiver receiver = null; // JTextArea를 상속받고 Runnable 인터페이스를 구현한 클래스로서 받은 정보를 담는 객체
     private JTextField sender = null; // JTextField 객체로서 보내는 정보를 담는 객체
@@ -46,7 +47,7 @@ public class TabbedTable extends JFrame implements ActionListener {
         String output = null;
         sender = new JTextField("고객요청사항: ");
         sender.addActionListener(this);
-
+        //오른쪽 펜에 붙일 Area
         text.add(new JScrollPane(receiver),"주문내역"); // 스크롤바를 위해  ScrollPane 이용
         text.add(sender,"고객요청사항");
 
@@ -70,7 +71,7 @@ public class TabbedTable extends JFrame implements ActionListener {
         canclebasket = new JButton("취소");
         total = new JButton("총 금액 표시");
 
-
+        //순서가 바뀌는 것을 방지하기 위해서 linkedHashMap을 사용
         LinkedHashMap<String, String> price = new LinkedHashMap<>();
         price.put("10000","제육덮밥");
         price.put("9000", "고추장찌개");
@@ -82,7 +83,7 @@ public class TabbedTable extends JFrame implements ActionListener {
         price.put("4500","떡만두국");
         price.put("6500","짜장면");
         price.put("25000","해물찜");
-
+        //키의 값을 이용해서 사진을 가져오기 위해서 Generic으로 설정
         LinkedHashMap<String, String> imagePaths = new LinkedHashMap<>();
         imagePaths.put("10000", "c:/jangu.jpg");
         imagePaths.put("9000", "c:/jangu.jpg");
@@ -104,6 +105,7 @@ public class TabbedTable extends JFrame implements ActionListener {
             for (int j = 0; j < numCols; j++) {
                 p[i][j] = new JPanel();
                 String key = it.next();
+                //사진을 가져오기 위해서 key로 가져오고, 크기를 조절하기 위해서 다음과 같이 진행함
                 String imagePath = imagePaths.get(key);
                 ImageIcon imageIcon = new ImageIcon(imagePath);
                 Image img = imageIcon.getImage();
@@ -176,8 +178,9 @@ public class TabbedTable extends JFrame implements ActionListener {
                 final int row = i; // Capture the value of i in a final variable
                 final int col = j; // Capture the value of j in a final variable
                 String count2 = count1[row][col].getText();
-                if (count2 == "0")
-                    break;
+                int menucount = Integer.parseInt(count2);
+                if (menucount == 0)
+                    basket[i][j].setEnabled(false);
                 else {
                     basket[i][j].addActionListener(new ActionListener() {
                         @Override
@@ -193,7 +196,7 @@ public class TabbedTable extends JFrame implements ActionListener {
                             String output = String.format("%s  %s원  %d 개\n", menu, won, count);
 
                             basketText.append(output);
-                            last.setText("총 가격 : " + totalsum );
+
 
                         }
                     });
@@ -224,13 +227,15 @@ public class TabbedTable extends JFrame implements ActionListener {
 
 
                     basketText.setText("");
+                    //총 가격을 나타내는 곳
+                    last.setText("총 가격 : " + totalsum );
 
                 } catch (IOException e1) {
                     handleError(e1.getMessage());
                 }
             }
         });
-
+        //장바구니에 있는 취소 버튼 구현
         canclebasket.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -270,6 +275,7 @@ public class TabbedTable extends JFrame implements ActionListener {
         setSize(1450, 600);
         setVisible(true);
     }
+    //Receiver로, 문자열을 받는 곳
     private class Receiver extends JTextArea implements Runnable {
         @Override
         public void run() {
@@ -290,6 +296,7 @@ public class TabbedTable extends JFrame implements ActionListener {
         System.out.println(string);
         System.exit(1);
     }
+    //고객 요청사항 있는 곳
     public void actionPerformed(ActionEvent e) { // JTextField에 <Enter> 키 처리
         if (e.getSource() == sender) {
             String msg = sender.getText(); // 텍스트 필드에 사용자가 입력한 문자열
@@ -324,7 +331,7 @@ public class TabbedTable extends JFrame implements ActionListener {
             }
         }
     }
-
+    //소켓과 연결이 되면 실행되는 메소드
     private void setupConnection() throws IOException {
         socket = new Socket("localhost", 9999); // 클라이언트 소켓 생성
         // System.out.println("연결됨");

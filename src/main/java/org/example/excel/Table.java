@@ -12,12 +12,14 @@ class orderEX extends Thread {
     private static int num;
 
     public void run() {
+        //스레드가 진행되면 TabbedTable아
         new TabbedTable();
     }
-
+    //스레드의 테이블 카운트를 지정하는 메소드
     public void setCount(int num) {
         this.num =num;
     }
+    //스레드의 테이블 카운트를 가져오는 메소드
     public static int getCount(){
         return num;
     }
@@ -30,7 +32,7 @@ public class Table extends JFrame implements ActionListener {
     private orderEX th4;
     private orderEX th5;
     private int num;
-
+    //각 메소드의 스레드 지정
 
     public Table() {
         setTitle("Table Setting");
@@ -44,7 +46,7 @@ public class Table extends JFrame implements ActionListener {
         JButton tb3 = new JButton("Table 3");
         JButton tb4 = new JButton("Table 4");
         JButton tb5 = new JButton("Table 5");
-
+        //버튼이 눌렸을때 실행되는 이벤트리스너
         tb1.addActionListener(this);
         tb2.addActionListener(this);
         tb3.addActionListener(this);
@@ -68,7 +70,7 @@ public class Table extends JFrame implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         JButton button = (JButton) e.getSource();
-
+        //각 테이블의 카운트를 지정하고 스레드를 진행시킴
         if (button.getText().equals("Table 1")) {
             if (th1 == null) {
                 th1 = new orderEX();
